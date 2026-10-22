@@ -1,0 +1,17 @@
+C:\Documents\tazkara\common\src\main\java\com\tazkara\common\error\ApiError.java
+C:\Documents\tazkara\common\src\main\java\com\tazkara\common\error\ApiExceptionHandler.java
+C:\Documents\tazkara\common\src\main\java\com\tazkara\common\error\CommonErrorCode.java
+C:\Documents\tazkara\common\src\main\java\com\tazkara\common\error\DomainException.java
+C:\Documents\tazkara\common\src\main\java\com\tazkara\common\error\ErrorCode.java
+C:\Documents\tazkara\common\src\main\java\com\tazkara\common\security\AuthenticatedUser.java
+C:\Documents\tazkara\common\src\main\java\com\tazkara\common\security\InternalApiKeyFilter.java
+C:\Documents\tazkara\common\src\main\java\com\tazkara\common\security\JwtAuthenticationFilter.java
+C:\Documents\tazkara\common\src\main\java\com\tazkara\common\security\JwtKeys.java
+C:\Documents\tazkara\common\src\main\java\com\tazkara\common\security\JwtTokenValidator.java
+C:\Documents\tazkara\common\src\main\java\com\tazkara\common\security\Role.java
+C:\Documents\tazkara\common\src\main\java\com\tazkara\common\security\SecurityErrorResponder.java
+C:\Documents\tazkara\common\src\main\java\com\tazkara\common\security\SecurityProperties.java
+C:\Documents\tazkara\common\src\main\java\com\tazkara\common\security\StatelessSecurity.java
+C:\Documents\tazkara\common\src\main\java\com\tazkara\common\web\CommonWebConfiguration.java
+C:\Documents\tazkara\common\src\main\java\com\tazkara\common\web\PageResponse.java
+C:\Documents\tazkara\common\src\main\java\com\tazkara\common\web\Paging.java
