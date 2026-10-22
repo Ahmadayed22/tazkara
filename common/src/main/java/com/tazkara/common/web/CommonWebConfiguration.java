@@ -14,8 +14,11 @@ import org.springframework.context.annotation.Configuration;
 import java.time.Clock;
 
 /**
- * Beans every service needs: a UTC clock (injected everywhere instead of calling Instant.now(), which keeps
- * time handling consistent and testable) and the OpenAPI definition with the JWT "Authorize" button.
+ *. @EnableConfigurationProperties(SecurityProperties.class) — registers SecurityProperties so Spring can load security settings from application.yml.
+
+ *. @Bean Clock clock() — provides a UTC clock for consistent, testable time handling across services.
+
+*. @Bean OpenAPI openApi(...) — configures Swagger documentation with the service title, description, version (1.0.0), and JWT Bearer authentication, allowing you to use the Authorize button in Swagger UI.
  */
 @Configuration
 @EnableConfigurationProperties(SecurityProperties.class)
