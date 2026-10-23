@@ -1,6 +1,6 @@
 package com.tazkara.common.security;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import com.tazkara.common.error.ApiError;
 import com.tazkara.common.error.CommonErrorCode;
 import com.tazkara.common.error.DomainException;
