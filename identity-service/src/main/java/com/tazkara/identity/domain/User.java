@@ -16,7 +16,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import java.time.Instant;
-import java.util.UUID;
 
 
 @Entity
@@ -26,7 +25,7 @@ import java.util.UUID;
 public class User {
 
     @Id
-    private UUID id;
+    private Long id;
 
     @Column(name = "full_name", nullable = false, length = 100)
     private String fullName;
@@ -54,7 +53,7 @@ public class User {
     @Getter(AccessLevel.NONE)
     private Long version;
 
-    User(UUID id, String fullName, EmailAddress email, String passwordHash, Role role,
+    User(Long id, String fullName, EmailAddress email, String passwordHash, Role role,
          String organizationName, Instant now) {
         this.id = id;
         this.fullName = fullName.trim();
