@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.Clock;
 import java.util.Date;
-import java.util.UUID;
+
 
 /**
  * Validates a JWT locally (signature, issuer, expiry) without calling the Identity Service.
@@ -41,7 +41,7 @@ public class JwtTokenValidator {
             if (subject == null || email == null || role == null || claims.getIssuedAt() == null) {
                 throw invalid();
             }
-            return new AuthenticatedUser(UUID.fromString(subject), email, Role.valueOf(role));
+            return new AuthenticatedUser(  Long.parseLong(subject), email, Role.valueOf(role));
         } catch (ExpiredJwtException ex) {
             throw new DomainException(CommonErrorCode.TOKEN_EXPIRED, "Token has expired");
         } catch (JwtException | IllegalArgumentException ex) {
