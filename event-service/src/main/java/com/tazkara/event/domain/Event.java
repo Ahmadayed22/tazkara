@@ -18,7 +18,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
+
 
 
 @Entity
@@ -38,7 +38,7 @@ public class Event {
     private Long id;
 
     @Column(name = "organizer_id", nullable = false)
-    private UUID organizerId;
+    private Long organizerId;
 
     @Column(nullable = false, length = 150)
     private String title;
@@ -79,7 +79,7 @@ public class Event {
 
     /** Factory method: a new event always starts as a DRAFT owned by its creator. */
     public static Event createDraft(
-            UUID organizerId,
+            Long organizerId,
             EventDetails details,
             List<TicketTypeSpec> specs,
             Instant now
@@ -113,7 +113,7 @@ public class Event {
         this.cancelledAt = now;
     }
 
-    public boolean isOwnedBy(UUID userId) {
+    public boolean isOwnedBy(Long userId) {
         return organizerId.equals(userId);
     }
 
