@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Service-to-service API for the Booking Service, protected by the shared internal API key
- * (see InternalApiKeyFilter). Hidden from the public Swagger UI.
+ * ( InternalApiKeyFilter). Hidden from the public Swagger UI.
  */
 @Hidden
 @RestController

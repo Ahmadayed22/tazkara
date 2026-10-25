@@ -1,7 +1,9 @@
 package com.tazkara.event.service;
 
 import com.tazkara.common.error.DomainException;
-
+import com.tazkara.common.messaging.EventCancelledMessage;
+import com.tazkara.common.messaging.MessagingTopology;
+import com.tazkara.common.messaging.OutboxPublisher;
 import com.tazkara.common.security.AuthenticatedUser;
 import com.tazkara.common.web.PageResponse;
 import com.tazkara.event.domain.Event;
@@ -19,20 +21,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
+import java.time.Instant;
 
-
+/**
+ * Use cases of the organizer: create (US-04), edit draft (US-05), publish (US-06), list own events (US-08)
+ * and cancel (US-09). Ownership is always checked; someone else's event answers 404 so ids reveal nothing.
+ */
 @Service
 public class OrganizerEventService {
 
     private static final Logger log = LoggerFactory.getLogger(OrganizerEventService.class);
 
     private final EventRepository eventRepository;
- 
+    private final OutboxPublisher outboxPublisher;
     private final Clock clock;
 
-    public OrganizerEventService(EventRepository eventRepository, Clock clock) {
+    public OrganizerEventService(EventRepository eventRepository, OutboxPublisher outboxPublisher, Clock clock) {
         this.eventRepository = eventRepository;
-     
+        this.outboxPublisher = outboxPublisher;
         this.clock = clock;
     }
 
@@ -60,7 +66,21 @@ public class OrganizerEventService {
         return OrganizerEventResponse.from(event);
     }
 
-
+    /**
+     * Cancels the event and, in the same transaction, stores an EventCancelled message in the outbox.
+     * The Booking Service consumes it asynchronously; if it is down the message waits in RabbitMQ (or in
+     * the outbox if RabbitMQ is down), so the cancellation never gets lost and the organizer is not blocked.
+     */
+    @Transactional
+    public OrganizerEventResponse cancel(AuthenticatedUser organizer, Long eventId) {
+        Event event = loadOwnedForUpdate(organizer, eventId);
+        Instant now = clock.instant();
+        event.cancel(now);
+        outboxPublisher.publish(MessagingTopology.EVENT_CANCELLED,
+                new EventCancelledMessage(event.getId(), event.getTitle(), now));
+        log.info("Event {} cancelled by organizer {}", eventId, organizer.id());
+        return OrganizerEventResponse.from(event);
+    }
 
     @Transactional(readOnly = true)
     public OrganizerEventResponse getOwn(AuthenticatedUser organizer, Long eventId) {
