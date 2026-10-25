@@ -3,6 +3,13 @@ C:\Documents\tazkara\common\src\main\java\com\tazkara\common\error\ApiExceptionH
 C:\Documents\tazkara\common\src\main\java\com\tazkara\common\error\CommonErrorCode.java
 C:\Documents\tazkara\common\src\main\java\com\tazkara\common\error\DomainException.java
 C:\Documents\tazkara\common\src\main\java\com\tazkara\common\error\ErrorCode.java
+C:\Documents\tazkara\common\src\main\java\com\tazkara\common\messaging\EventCancelledMessage.java
+C:\Documents\tazkara\common\src\main\java\com\tazkara\common\messaging\MessagingTopology.java
+C:\Documents\tazkara\common\src\main\java\com\tazkara\common\messaging\OutboxMessage.java
+C:\Documents\tazkara\common\src\main\java\com\tazkara\common\messaging\OutboxPublisher.java
+C:\Documents\tazkara\common\src\main\java\com\tazkara\common\messaging\OutboxRelay.java
+C:\Documents\tazkara\common\src\main\java\com\tazkara\common\messaging\OutboxRepository.java
+C:\Documents\tazkara\common\src\main\java\com\tazkara\common\messaging\TicketsReleasedMessage.java
 C:\Documents\tazkara\common\src\main\java\com\tazkara\common\security\AuthenticatedUser.java
 C:\Documents\tazkara\common\src\main\java\com\tazkara\common\security\InternalApiKeyFilter.java
 C:\Documents\tazkara\common\src\main\java\com\tazkara\common\security\JwtAuthenticationFilter.java

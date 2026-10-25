@@ -1,0 +1,29 @@
+# One command starts everything:  docker compose up --build
+# One container runs PostgreSQL, RabbitMQ and the three services (see docker/supervisord.conf).
+#
+# The values after ":-" are DEVELOPMENT DEFAULTS ONLY, so the project runs from a fresh clone.
+# Override them with real secrets through environment variables or a .env file outside version control.
+services:
+  tazkara:
+    build: .
+    image: tazkara:latest
+    container_name: tazkara
+    hostname: tazkara
+    ports:
+      - "8081:8081"   # Identity Service
+      - "8082:8082"   # Event Service
+  
+    environment:
+      JWT_SECRET: ${JWT_SECRET:-dev-only-tazkara-jwt-secret-change-me-0123456789abcdef}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-30m}
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY:-dev-only-internal-api-key-change-me}
+      IDENTITY_DB_PASSWORD: ${IDENTITY_DB_PASSWORD:-dev-only-identity-db-pw}
+      EVENT_DB_PASSWORD: ${EVENT_DB_PASSWORD:-dev-only-event-db-pw}
+      RABBITMQ_USER: ${RABBITMQ_USER:-tazkara}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-dev-only-rabbitmq-pw}
+    volumes:
+      - tazkara-data:/var/lib/tazkara
+    restart: unless-stopped
+
+volumes:
+  tazkara-data:
