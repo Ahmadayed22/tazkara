@@ -17,7 +17,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Table(name = "bookings", indexes = {
@@ -39,7 +38,7 @@ public class Booking extends AbstractAggregateRoot<Booking> {
     private BookingReference reference;
 
     @Column(name = "attendee_id", nullable = false)
-    private UUID attendeeId;
+    private Long attendeeId;
 
     @Column(name = "attendee_email", nullable = false, length = 254)
     private String attendeeEmail;
@@ -107,7 +106,7 @@ public class Booking extends AbstractAggregateRoot<Booking> {
      */
     public static Booking place(
             BookingReference reference,
-            UUID attendeeId,
+            Long attendeeId,
             String attendeeEmail,
             Long eventId,
             String eventTitle,
@@ -201,7 +200,7 @@ public class Booking extends AbstractAggregateRoot<Booking> {
         cancel(CancellationReason.EVENT_CANCELLED, now);
     }
 
-    public boolean isOwnedBy(UUID userId) {
+    public boolean isOwnedBy(Long userId) {
         return attendeeId.equals(userId);
     }
 
