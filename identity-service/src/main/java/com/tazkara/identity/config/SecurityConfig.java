@@ -22,6 +22,7 @@ public class SecurityConfig {
                         .requestMatchers(StatelessSecurity.PUBLIC_DOCS).permitAll()
                         .requestMatchers("/internal/**").hasRole(InternalApiKeyFilter.INTERNAL_ROLE)
                         .requestMatchers(HttpMethod.GET, "/api/events", "/api/events/*").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login").permitAll()
                         .requestMatchers("/api/events/**", "/api/organizer/**").hasRole(Role.ORGANIZER.name())
                         .anyRequest().authenticated());
         return http.build();

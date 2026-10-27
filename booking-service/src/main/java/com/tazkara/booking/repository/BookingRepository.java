@@ -62,5 +62,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             """)
     List<Long> findOverdueIds(@Param("status") BookingStatus status, @Param("now") Instant now, Pageable limit);
 
-
+  @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select b from Booking b where b.eventId = :eventId and b.status in :statuses order by b.id")
+    List<Booking> findByEventIdAndStatusInForUpdate(@Param("eventId") Long eventId,
+                                                    @Param("statuses") Collection<BookingStatus> statuses);
 }

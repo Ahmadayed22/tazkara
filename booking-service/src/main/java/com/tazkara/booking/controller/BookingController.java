@@ -58,7 +58,11 @@ public class BookingController {
         return bookingService.pay(user, reference, request.paymentMethod());
     }
 
-
+    @PostMapping("/{reference}/cancel")
+    @Operation(summary = "Cancel my booking (refund policy applies to confirmed bookings)")
+    public BookingResponse cancel(@AuthenticationPrincipal AuthenticatedUser user, @PathVariable String reference) {
+        return bookingService.cancel(user, reference);
+    }
 
     @GetMapping
     @Operation(summary = "List my bookings, newest first, optionally filtered by status")

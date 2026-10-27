@@ -9,6 +9,8 @@ import com.tazkara.booking.domain.BookingLine;
 import com.tazkara.booking.domain.BookingReference;
 import com.tazkara.booking.domain.BookingStatus;
 import com.tazkara.booking.domain.PaymentMethod;
+import com.tazkara.booking.domain.refund.RefundPolicy;
+import com.tazkara.booking.domain.refund.RefundPolicyResolver;
 
 import com.tazkara.booking.exception.BookingErrorCode;
 import com.tazkara.booking.repository.BookingRepository;
@@ -42,20 +44,22 @@ public class BookingService {
     private final EventServiceClient eventServiceClient;
     private final BookingReferenceGenerator referenceGenerator;
     private final TicketReleaseService ticketReleaseService;
-  
+      private final RefundPolicyResolver refundPolicyResolver;
+
     private final BookingProperties properties;
     private final TransactionTemplate transactionTemplate;
     private final Clock clock;
 
     public BookingService(BookingRepository bookingRepository, EventServiceClient eventServiceClient,
                           BookingReferenceGenerator referenceGenerator, TicketReleaseService ticketReleaseService,
-                           BookingProperties properties,
+            BookingProperties properties,
+                                     RefundPolicyResolver refundPolicyResolver,
                           TransactionTemplate transactionTemplate, Clock clock) {
         this.bookingRepository = bookingRepository;
         this.eventServiceClient = eventServiceClient;
         this.referenceGenerator = referenceGenerator;
         this.ticketReleaseService = ticketReleaseService;
-       
+        this.refundPolicyResolver = refundPolicyResolver;
         this.properties = properties;
         this.transactionTemplate = transactionTemplate;
         this.clock = clock;
@@ -129,6 +133,17 @@ public class BookingService {
     }
 
 
+    @Transactional
+    public BookingResponse cancel(AuthenticatedUser attendee, String reference) {
+        Booking booking = lockOwned(attendee, reference);
+        Instant now = clock.instant();
+        RefundPolicy policy = refundPolicyResolver.resolve(Duration.between(now, booking.getEventStartsAt()));
+        booking.cancelByAttendee(policy, now);
+        ticketReleaseService.release(booking, "CANCELLED_BY_ATTENDEE");
+        bookingRepository.save(booking);
+        log.info("Booking {} cancelled by attendee, refund {}", reference, booking.getRefundAmount());
+        return BookingResponse.from(booking);
+    }
 
     private ReservationResult reserveTickets(Long eventId, String reference, Map<Long, Integer> quantities) {
         try {

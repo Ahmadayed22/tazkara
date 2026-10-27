@@ -1,6 +1,7 @@
 
 package com.tazkara.booking.domain;
 
+import com.tazkara.booking.domain.refund.RefundPolicy;
 import com.tazkara.booking.exception.BookingErrorCode;
 import com.tazkara.common.error.DomainException;
 import jakarta.persistence.*;
@@ -185,7 +186,20 @@ public class Booking extends AbstractAggregateRoot<Booking> {
         return true;
     }
 
-
+    public void cancelByAttendee(RefundPolicy policy, Instant now) {
+        switch (status) {
+            case PENDING_PAYMENT -> this.refundAmount = BigDecimal.ZERO.setScale(2);
+            case CONFIRMED -> {
+                if (!policy.allowsCancellation()) {
+                    throw new DomainException(BookingErrorCode.CANCELLATION_NOT_ALLOWED, policy.description());
+                }
+                this.refundAmount = policy.refundFor(totalAmount);
+            }
+            default -> throw new DomainException(BookingErrorCode.BOOKING_NOT_CANCELLABLE,
+                    "Booking " + reference + " is already " + status);
+        }
+        cancel(CancellationReason.BY_ATTENDEE, now);
+    }
 
     /** The organizer cancelled the event. */
     public void cancelBecauseEventCancelled(Instant now) {
