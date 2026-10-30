@@ -1,23 +1,22 @@
 package com.tazkara.identity.service;
 
 import com.tazkara.common.error.DomainException;
+import com.tazkara.identity.config.JwtTokenIssuer;
 import com.tazkara.identity.domain.EmailAddress;
 import com.tazkara.identity.domain.User;
 import com.tazkara.identity.domain.UserFactory;
-import com.tazkara.identity.exception.IdentityErrorCode;
-import com.tazkara.identity.repository.UserRepository;
 import com.tazkara.identity.dto.LoginRequest;
 import com.tazkara.identity.dto.RegisterRequest;
 import com.tazkara.identity.dto.TokenResponse;
 import com.tazkara.identity.dto.UserProfileResponse;
+import com.tazkara.identity.exception.IdentityErrorCode;
+import com.tazkara.identity.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import  com.tazkara.identity.config.JwtTokenIssuer;
-import java.util.Optional;
 
 @Service
 public class AuthService {
@@ -29,7 +28,6 @@ public class AuthService {
     private final UserFactory userFactory;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenIssuer tokenIssuer;
-    private final String dummyPasswordHash;
 
     public AuthService(UserRepository userRepository, UserFactory userFactory,
                        PasswordEncoder passwordEncoder, JwtTokenIssuer tokenIssuer) {
@@ -37,7 +35,6 @@ public class AuthService {
         this.userFactory = userFactory;
         this.passwordEncoder = passwordEncoder;
         this.tokenIssuer = tokenIssuer;
-        this.dummyPasswordHash = passwordEncoder.encode("timing-equaliser-not-a-real-password-1");
     }
 
     @Transactional
@@ -60,15 +57,14 @@ public class AuthService {
 
     @Transactional(readOnly = true)
     public TokenResponse login(LoginRequest request) {
-        Optional<User> user = userRepository.findByEmail(EmailAddress.of(request.email()));
-        String hashToCheck = user.map(User::getPasswordHash).orElse(dummyPasswordHash);
-        boolean passwordMatches = passwordEncoder.matches(request.password(), hashToCheck);
-        if (user.isEmpty() || !passwordMatches) {
-            log.info("Failed login attempt");
-            throw new DomainException(IdentityErrorCode.INVALID_CREDENTIALS, INVALID_CREDENTIALS_MESSAGE);
-        }
-        JwtTokenIssuer.IssuedToken token = tokenIssuer.issue(user.get());
-        log.info("User id={} logged in", user.get().getId());
+        User user = userRepository.findByEmail(EmailAddress.of(request.email()))
+                .filter(u -> passwordEncoder.matches(request.password(), u.getPasswordHash()))
+                .orElseThrow(() -> {
+                    log.info("Failed login attempt");
+                    return new DomainException(IdentityErrorCode.INVALID_CREDENTIALS, INVALID_CREDENTIALS_MESSAGE);
+                });
+        JwtTokenIssuer.IssuedToken token = tokenIssuer.issue(user);
+        log.info("User id={} logged in", user.getId());
         return new TokenResponse(token.value(), "Bearer", token.expiresAt(), token.expiresInSeconds());
     }
 
