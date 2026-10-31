@@ -133,7 +133,7 @@ public class Event {
     }
 
     /**
-     * Reserves tickets, all or nothing: every line is checked before any counter changes.
+     * Reserves tickets, all or nothing.
      * The caller must hold a write lock on this event.
      */
     public void reserve(Map<Long, Integer> quantitiesByTicketType, Instant now) {

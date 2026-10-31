@@ -65,5 +65,23 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
   @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select b from Booking b where b.eventId = :eventId and b.status in :statuses order by b.id")
     List<Booking> findByEventIdAndStatusInForUpdate(@Param("eventId") Long eventId,
-                                                    @Param("statuses") Collection<BookingStatus> statuses);
+                    @Param("statuses") Collection<BookingStatus> statuses);
+                                                    
+                     @Query("""
+            select new com.tazkara.booking.repository.TicketSalesRow(
+                l.ticketTypeId, b.status, sum(l.quantity), sum(l.unitPrice * l.quantity))
+            from Booking b join b.lines l
+            where b.eventId = :eventId and b.status in :statuses
+            group by l.ticketTypeId, b.status
+            """)
+    List<TicketSalesRow> summarizeByTicketType(@Param("eventId") Long eventId,
+                                               @Param("statuses") Collection<BookingStatus> statuses);
+
+    @Query("""
+            select distinct b from Booking b join fetch b.lines
+            where b.eventId = :eventId and b.status = :status
+            order by b.confirmedAt, b.id
+            """)
+    List<Booking> findWithLinesByEventIdAndStatus(@Param("eventId") Long eventId,
+                                                  @Param("status") BookingStatus status);
 }
