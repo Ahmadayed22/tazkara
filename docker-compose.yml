@@ -12,15 +12,19 @@ services:
     ports:
       - "8081:8081"   # Identity Service
       - "8082:8082"   # Event Service
-  
+      - "8083:8083"   # Booking Service
     environment:
       JWT_SECRET: ${JWT_SECRET:-dev-only-tazkara-jwt-secret-change-me-0123456789abcdef}
       JWT_EXPIRATION: ${JWT_EXPIRATION:-30m}
       INTERNAL_API_KEY: ${INTERNAL_API_KEY:-dev-only-internal-api-key-change-me}
       IDENTITY_DB_PASSWORD: ${IDENTITY_DB_PASSWORD:-dev-only-identity-db-pw}
       EVENT_DB_PASSWORD: ${EVENT_DB_PASSWORD:-dev-only-event-db-pw}
+      BOOKING_DB_PASSWORD: ${BOOKING_DB_PASSWORD:-dev-only-booking-db-pw}
+      BOOKING_HOLD_DURATION: ${BOOKING_HOLD_DURATION:-10m}
+      BOOKING_EXPIRY_JOB_INTERVAL: ${BOOKING_EXPIRY_JOB_INTERVAL:-PT30S}
       RABBITMQ_USER: ${RABBITMQ_USER:-tazkara}
       RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-dev-only-rabbitmq-pw}
+      DEMO_DATA_ENABLED: ${DEMO_DATA_ENABLED:-true}
     volumes:
       - tazkara-data:/var/lib/tazkara
     restart: unless-stopped
